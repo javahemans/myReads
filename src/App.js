@@ -7,7 +7,7 @@ class SearchBooks extends React.Component {
     return (
       <div className="search-books">
       <div className="search-books-bar">
-        <a className="close-search" onClick={() => this.setState({ showSearchPage: false })}>Close</a>
+        <a className="close-search" onClick={this.props.backToHome} >Close</a>
         <div className="search-books-input-wrapper">
           {/* 
             NOTES: The search from BooksAPI is limited to a particular set of search terms.
@@ -188,7 +188,7 @@ class ListBooks extends React.Component {
         </div>
       </div>
       <div className="open-search">
-        <a onClick={() => this.setState({ showSearchPage: true })}>Add a book</a>
+        <a onClick={this.props.backToHome} >Add a book</a>
       </div>
     </div>
     )
@@ -206,13 +206,18 @@ class BooksApp extends React.Component {
     showSearchPage: true
   }
 
+  togglePage = () => {
+    const flip =!(this.state.showSearchPage)
+    this.setState({showSearchPage: flip })
+  }
+
   render() {
     return (
       <div className="app">
         {this.state.showSearchPage ? (
-          <SearchBooks />
+          <SearchBooks backToHome={this.togglePage} />
         ) : (
-          <ListBooks />
+          <ListBooks backToHome={this.togglePage} />
         )}
       </div>
     )
