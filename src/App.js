@@ -1,5 +1,6 @@
 import React from 'react'
 import * as BooksAPI from './BooksAPI'
+import { Link, Route } from 'react-router-dom'
 import './App.css'
 
 class SearchBooks extends React.Component {
@@ -7,7 +8,7 @@ class SearchBooks extends React.Component {
     return (
       <div className="search-books">
       <div className="search-books-bar">
-        <a className="close-search" onClick={this.props.backToHome} >Close</a>
+        <Link to="/" className="close-search" >Close</Link>
         <div className="search-books-input-wrapper">
           {/* 
             NOTES: The search from BooksAPI is limited to a particular set of search terms.
@@ -188,7 +189,7 @@ class ListBooks extends React.Component {
         </div>
       </div>
       <div className="open-search">
-        <a onClick={this.props.backToHome} >Add a book</a>
+        <Link to="/search" >Add a book</Link>
       </div>
     </div>
     )
@@ -207,6 +208,7 @@ class BooksApp extends React.Component {
   }
 
   togglePage = () => {
+    console.log("I've been called.")
     const flip =!(this.state.showSearchPage)
     this.setState({showSearchPage: flip })
   }
@@ -214,11 +216,14 @@ class BooksApp extends React.Component {
   render() {
     return (
       <div className="app">
-        {this.state.showSearchPage ? (
-          <SearchBooks backToHome={this.togglePage} />
-        ) : (
+        <Route exact path="/" render={() => (
           <ListBooks backToHome={this.togglePage} />
         )}
+        />
+        <Route exact path="/search" render={()=> (
+          <SearchBooks backToHome={this.togglePage} />
+        )}
+        />
       </div>
     )
   }
