@@ -8,15 +8,16 @@ import './App.css'
 class SearchBooks extends React.Component {
 
   state = {
-    query: ''
+    query: '',
+    rawBooks: []
   }
 
   componentDidMount() {
-    BooksAPI.search('Android', 5).then((res) => {
-      console.log('results', res)
+    BooksAPI.search('Android', 5).then((rawBooks) => {
+      console.log('results', rawBooks)
+      this.setState({ rawBooks })
     })
   }
-
 
   updateQuery = (query) => {
     this.setState({query: query.trim() })
@@ -24,7 +25,7 @@ class SearchBooks extends React.Component {
   }
   
   render() {
-    const { query } = this.state
+    const { query, rawBooks } = this.state
     
     return (
       <div className="search-books">
@@ -49,7 +50,13 @@ class SearchBooks extends React.Component {
         </div>
       </div>
       <div className="search-books-results">
-        <ol className="books-grid"></ol>
+        <ol className="books-grid">
+        {rawBooks.map((book) => 
+          <li key={book.id}>                  
+          <Book bookDetail={book} changeShelf={this.props.onUpdateShelf}/>
+          </li>
+        )}                              
+        </ol>
       </div>
       </div>
     )
@@ -154,7 +161,7 @@ class BooksApp extends React.Component {
         />
         <Route exact path="/search" render={()=> (
           <SearchBooks 
-            books={this.state.books}         
+            books={this.state.books} onUpdateShelf={this.updateShelf}        
           />
         )}
         />
