@@ -4,13 +4,19 @@ import * as BooksAPI from './BooksAPI'
 
 class Book extends React.Component {
 
+    /* Side note, when I put this inline on the select statement, I ended up with null :-/ */
+    handleChange = (e) => {
+        console.log(e.target.value)
+        this.props.changeShelf(e.target.value, this.props.bookDetail.id)
+    }
+
     render(){
         return (
             <div className="book">
               <div className="book-top">
                 <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: 'url(' + this.props.bookDetail.imageLinks.thumbnail +')' }}></div>
                 <div className="book-shelf-changer">
-                  <select>
+                  <select value={this.props.bookDetail.shelf} onChange={this.handleChange}>
                     <option value="none" disabled>Move to...</option>
                     <option value="currentlyReading">Currently Reading</option>
                     <option value="wantToRead">Want to Read</option>

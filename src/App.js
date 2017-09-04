@@ -53,7 +53,7 @@ class ListBooks extends React.Component {
                 {books.filter(book => book.shelf === "currentlyReading" )
                   .map((book) => 
                   <li key={book.id}>                  
-                  <Book bookDetail={book}/>
+                  <Book bookDetail={book} changeShelf={this.props.onUpdateShelf}/>
                   </li>
                 )}                
               </ol>
@@ -67,7 +67,7 @@ class ListBooks extends React.Component {
                 {books.filter(book => book.shelf === "wantToRead" )
                 .map((book) => 
                 <li key={book.id}>                  
-                <Book bookDetail={book}/>
+                <Book bookDetail={book} changeShelf={this.props.onUpdateShelf}/>
                 </li>
               )}                
               </ol>
@@ -81,7 +81,7 @@ class ListBooks extends React.Component {
                 {books.filter(book => book.shelf === "read" )
                 .map((book) => 
                 <li key={book.id}>                  
-                <Book bookDetail={book}/>
+                <Book bookDetail={book} changeShelf={this.props.onUpdateShelf}/>
                 </li>
               )}                
               </ol>
@@ -108,17 +108,39 @@ class BooksApp extends React.Component {
     })
   }
 
+  updateShelf = (bookShelfTarget, bookId) => {
+    console.log("bookshelf update registered for: ", bookId, bookShelfTarget)
+
+    const newBooks = this.state.books.map((book) => {
+      if(book.id === bookId) {
+        console.log("book to update is", book)
+        BooksAPI.update(book, bookShelfTarget).then(res => res)
+        return { ...book, "shelf": bookShelfTarget }
+      } else {
+        return book
+      }
+    });
+
+    console.log("The newBooks array is: ", newBooks)
+
+    this.setState({
+      books: newBooks
+    })
+  }
+
   render() {
     return (
       <div className="app">
         <Route exact path="/" render={() => (
           <ListBooks
-            books={this.state.books} 
+            books={this.state.books}
+            onUpdateShelf={this.updateShelf} 
           />
         )}
         />
         <Route exact path="/search" render={()=> (
           <SearchBooks 
+            books={this.state.books}         
           />
         )}
         />
