@@ -6,7 +6,26 @@ import { Link, Route } from 'react-router-dom'
 import './App.css'
 
 class SearchBooks extends React.Component {
+
+  state = {
+    query: ''
+  }
+
+  componentDidMount() {
+    BooksAPI.search('Android', 5).then((res) => {
+      console.log('results', res)
+    })
+  }
+
+
+  updateQuery = (query) => {
+    this.setState({query: query.trim() })
+    console.log(query)
+  }
+  
   render() {
+    const { query } = this.state
+    
     return (
       <div className="search-books">
       <div className="search-books-bar">
@@ -20,7 +39,12 @@ class SearchBooks extends React.Component {
             However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
             you don't find a specific author or title. Every search is limited by search terms.
           */}
-          <input type="text" placeholder="Search by title or author"/>
+          <input 
+            type="text" 
+            placeholder="Search by title or author"
+            value={query}
+            onChange={(event) => this.updateQuery(event.target.value)}
+          />
           
         </div>
       </div>
@@ -28,6 +52,31 @@ class SearchBooks extends React.Component {
         <ol className="books-grid"></ol>
       </div>
       </div>
+    )
+  }
+}
+
+class BookShelf extends React.Component {
+
+  render() {
+    const books = this.props.books
+    console.log("Books in Bookshelf, ", books)
+    return(
+      <div className="bookshelf">
+      <h2 className="bookshelf-title">{this.props.shelfTitle}</h2>
+      <div className="bookshelf-books">
+        <ol className="books-grid">
+          {/* Refactored to Book.js */}
+          {books.filter(book => book.shelf === this.props.shelfName )
+            .map((book) => 
+            <li key={book.id}>                  
+            <Book bookDetail={book} changeShelf={this.props.onUpdateShelf}/>
+            </li>
+          )}                
+        </ol>
+      </div>
+    </div>
+
     )
   }
 }
@@ -45,48 +94,9 @@ class ListBooks extends React.Component {
       </div>
       <div className="list-books-content">
         <div>
-          <div className="bookshelf">
-            <h2 className="bookshelf-title">Currently Reading</h2>
-            <div className="bookshelf-books">
-              <ol className="books-grid">
-                {/* Refactored to Book.js */}
-                {books.filter(book => book.shelf === "currentlyReading" )
-                  .map((book) => 
-                  <li key={book.id}>                  
-                  <Book bookDetail={book} changeShelf={this.props.onUpdateShelf}/>
-                  </li>
-                )}                
-              </ol>
-            </div>
-          </div>
-          <div className="bookshelf">
-            <h2 className="bookshelf-title">Want to Read</h2>
-            <div className="bookshelf-books">
-              <ol className="books-grid">
-                {/* Refactored to Book.js */}
-                {books.filter(book => book.shelf === "wantToRead" )
-                .map((book) => 
-                <li key={book.id}>                  
-                <Book bookDetail={book} changeShelf={this.props.onUpdateShelf}/>
-                </li>
-              )}                
-              </ol>
-            </div>
-          </div>
-          <div className="bookshelf">
-            <h2 className="bookshelf-title">Read</h2>
-            <div className="bookshelf-books">
-              <ol className="books-grid">
-                {/* Refactored to Book.js */}
-                {books.filter(book => book.shelf === "read" )
-                .map((book) => 
-                <li key={book.id}>                  
-                <Book bookDetail={book} changeShelf={this.props.onUpdateShelf}/>
-                </li>
-              )}                
-              </ol>
-            </div>
-          </div>
+          <BookShelf books={books} onUpdateShelf={this.props.onUpdateShelf} shelfTitle="Currently Reading" shelfName="currentlyReading" />
+          <BookShelf books={books} onUpdateShelf={this.props.onUpdateShelf} shelfTitle="Want to Read" shelfName="wantToRead" />
+          <BookShelf books={books} onUpdateShelf={this.props.onUpdateShelf} shelfTitle="Read" shelfName="read" />          
         </div>
       </div>
       <div className="open-search">
@@ -114,8 +124,12 @@ class BooksApp extends React.Component {
     const newBooks = this.state.books.map((book) => {
       if(book.id === bookId) {
         console.log("book to update is", book)
-        BooksAPI.update(book, bookShelfTarget).then(res => res)
-        return { ...book, "shelf": bookShelfTarget }
+        BooksAPI.update(book, bookShelfTarget).then(res => {
+          console.log("Update response is, ", res)
+          return res
+        })
+        const newBook = { ...book, "shelf": bookShelfTarget }
+        return newBook
       } else {
         return book
       }
