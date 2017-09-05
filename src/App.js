@@ -67,7 +67,7 @@ class BookShelf extends React.Component {
 
   render() {
     const books = this.props.books
-    console.log("Books in Bookshelf, ", books)
+    // console.log("Books in Bookshelf, ", books)
     return(
       <div className="bookshelf">
       <h2 className="bookshelf-title">{this.props.shelfTitle}</h2>
@@ -125,28 +125,56 @@ class BooksApp extends React.Component {
     })
   }
 
-  updateShelf = (bookShelfTarget, bookId) => {
-    console.log("bookshelf update registered for: ", bookId, bookShelfTarget)
+  updateShelf = (bookShelfTarget, bookToUpdate) => {
+    console.log("bookshelf update registered for: ", bookToUpdate.id, bookShelfTarget)
+    /* Check whether this book exists locally. If not, add it wholesale to the
+       books array. 
+    */
 
-    const newBooks = this.state.books.map((book) => {
-      if(book.id === bookId) {
-        console.log("book to update is", book)
-        BooksAPI.update(book, bookShelfTarget).then(res => {
-          console.log("Update response is, ", res)
-          return res
-        })
-        const newBook = { ...book, "shelf": bookShelfTarget }
-        return newBook
-      } else {
-        return book
-      }
-    });
+    const bookInLibrary = this.state.books.filter((book) => book.id === bookToUpdate.id)
+    console.log("Does this book already exist in my library? ",bookInLibrary,bookInLibrary.length  )
 
-    console.log("The newBooks array is: ", newBooks)
+    if(bookInLibrary.length !== 0) {
 
-    this.setState({
-      books: newBooks
-    })
+      const newBooks = this.state.books.map((book) => {
+
+        if(book.id === bookToUpdate.id) {
+          console.log("book to update is", book)
+          BooksAPI.update(book, bookShelfTarget).then(res => {
+            console.log("Update response is, ", res)
+            return res
+          })
+          const newBook = { ...book, "shelf": bookShelfTarget }
+          return newBook
+        } else {
+          return book
+        }
+      });
+
+      console.log("The newBooks array is: ", newBooks)
+      
+      this.setState({
+        books: newBooks
+      })
+      
+    } else {
+      console.log("The book is not in the Library, will add it")
+      // Update API with Shelf Choice
+      BooksAPI.update(bookToUpdate, bookShelfTarget).then(res => {
+        console.log("Added shelf meta data to book, ", res, bookToUpdate)
+        return res
+      })
+      // Update newBooks array with new book and shelf choice
+      const bookToUpdateWithShelf = {...bookToUpdate, shelf: bookShelfTarget}      
+      const newBooks = [...this.state.books, bookToUpdateWithShelf]
+      console.log("Newbooks with added book is ", newBooks)
+
+      this.setState({
+        books: newBooks
+      })
+
+    }
+
   }
 
   render() {
