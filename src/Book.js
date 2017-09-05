@@ -1,6 +1,4 @@
 import React from 'react'
-// import { Link } from 'react-router-dom'
-// import * as BooksAPI from './BooksAPI'
 import _result from 'lodash.result'
 
 class Book extends React.Component {
@@ -12,10 +10,13 @@ class Book extends React.Component {
     }
 
     render(){
+
+        const { bookDetail } = this.props
+        
         return (
             <div className="book">
               <div className="book-top">
-                <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: 'url(' + this.props.bookDetail.imageLinks.thumbnail +')' }}></div>
+                <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: 'url(' + (bookDetail.imageLinks ? bookDetail.imageLinks.thumbnail : "none" ) +')' }}></div>
                 <div className="book-shelf-changer">
                   <select value={this.props.bookDetail.shelf} onChange={this.handleChange}>
                     <option value="" disabled>Move to...</option>
@@ -30,9 +31,12 @@ class Book extends React.Component {
                 {
                     /* Super annoying... Some of the JSON results of rawBooks are
                     missing the authors property, so using lodash _result to prevent undefined with [] instead */
-                    _result(this.props.bookDetail,'authors',[]).map((a,index) => (
-                        <div key={index} className="book-authors">{a}</div>                        
-                    ))
+                    // _result(this.props.bookDetail,'authors',[]).map((a,index) => (
+                    //     <div key={index} className="book-authors">{a}</div>                        
+                    // ))
+                    // Alternate below per Udacity review - easier :)
+                    <div className="book-authors">{bookDetail.authors ? bookDetail.authors.join(", ") : ""}</div>
+                    
                 }
             </div>      
         )

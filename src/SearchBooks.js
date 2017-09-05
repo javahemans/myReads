@@ -11,9 +11,10 @@ class SearchBooks extends React.Component {
   }
 
   augmentBooks = (booksToAugment) => {
-    if(!booksToAugment || !booksToAugment.length){
-      return [];
-    }
+    // console.log(booksToAugment)
+    // if(!booksToAugment || !booksToAugment.length){
+    //   return [];
+    // }
 
     /* Need to augment these results so they include a shelf property from users book
         collection. The shelf property should be "none", if no match is found
@@ -33,17 +34,28 @@ class SearchBooks extends React.Component {
   }
 
   updateQuery = (query) => {
+
+    /* Checks if query is < 1 (triggers 403), also returns a blank array if query response is empty */
+
     this.setState({query: query.trim() })
     // console.log(query)
-    BooksAPI.search(query, 20).then((rawBooks) => {
-      // console.log('raw results', rawBooks)
-      this.setState({ rawBooks })
-    })    
+    if (query.length < 1) {
+      return this.setState({ rawBooks: [] })    
+    } else {
+      BooksAPI.search(query, 20).then((rawBooks) => {
+        // console.log('raw results', rawBooks)
+        if(!!rawBooks.length) {
+            const enhancedBooks = this.augmentBooks(rawBooks)        
+            return this.setState({ rawBooks: enhancedBooks })
+        } else {
+          return this.setState({ rawBooks: [] })
+        }
+      }) 
+    }   
   }
   
   render() {
     const { query, rawBooks } = this.state
-    const enhancedBooks = this.augmentBooks(rawBooks)
     // console.log("Book Status Change on /search")
     return (
       <div className="search-books">
@@ -68,7 +80,7 @@ class SearchBooks extends React.Component {
         </div>
         <div className="search-books-results">
           <ol className="books-grid">
-              {enhancedBooks.map((book) => 
+              {rawBooks.map((book) => 
                   <li key={book.id}>                  
                   <Book bookDetail={book} changeShelf={this.props.onUpdateShelf}/>
                   </li>
