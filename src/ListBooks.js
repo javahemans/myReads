@@ -6,7 +6,7 @@ import BookShelf from './BookShelf'
     render() {
   
       const books=this.props.books
-      console.log(books)
+      // console.log(books)
   
       return (
         <div className="list-books">

@@ -7,7 +7,7 @@ class Book extends React.Component {
 
     /* Side note, when I put this inline on the select statement, I ended up with null :-/ */
     handleChange = (e) => {
-        console.log(e.target.value)
+        // console.log(e.target.value)
         this.props.changeShelf(e.target.value, this.props.bookDetail)
     }
 

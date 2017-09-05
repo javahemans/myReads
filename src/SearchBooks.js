@@ -20,23 +20,23 @@ class SearchBooks extends React.Component {
     */
     const augmentedBooks = booksToAugment.map((rawBook) => {
       const res = this.props.books.find((book) => book.id === rawBook.id)
-      console.log("Interim Result is,", res)
+      // console.log("Interim Result is,", res)
       if(!!res){
         return { ...rawBook, shelf: res.shelf }
       } else {
         return { ...rawBook, shelf: "none" }
       }      
     })   
-    console.log("AugmentedBook Result is,", augmentedBooks)
+    // console.log("AugmentedBook Result is,", augmentedBooks)
     
     return augmentedBooks
   }
 
   updateQuery = (query) => {
     this.setState({query: query.trim() })
-    console.log(query)
-    BooksAPI.search(query, 5).then((rawBooks) => {
-      console.log('raw results', rawBooks)
+    // console.log(query)
+    BooksAPI.search(query, 20).then((rawBooks) => {
+      // console.log('raw results', rawBooks)
       this.setState({ rawBooks })
     })    
   }
@@ -44,7 +44,7 @@ class SearchBooks extends React.Component {
   render() {
     const { query, rawBooks } = this.state
     const enhancedBooks = this.augmentBooks(rawBooks)
-    console.log("Book Status Change on /search")
+    // console.log("Book Status Change on /search")
     return (
       <div className="search-books">
         <div className="search-books-bar">
