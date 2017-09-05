@@ -45,8 +45,7 @@ class SearchBooks extends React.Component {
       BooksAPI.search(query, 20).then((rawBooks) => {
         // console.log('raw results', rawBooks)
         if(!!rawBooks.length) {
-            const enhancedBooks = this.augmentBooks(rawBooks)        
-            return this.setState({ rawBooks: enhancedBooks })
+            return this.setState({ rawBooks })
         } else {
           return this.setState({ rawBooks: [] })
         }
@@ -56,6 +55,7 @@ class SearchBooks extends React.Component {
   
   render() {
     const { query, rawBooks } = this.state
+    const enhancedBooks = this.augmentBooks(rawBooks)            
     // console.log("Book Status Change on /search")
     return (
       <div className="search-books">
@@ -80,7 +80,7 @@ class SearchBooks extends React.Component {
         </div>
         <div className="search-books-results">
           <ol className="books-grid">
-              {rawBooks.map((book) => 
+              {enhancedBooks.map((book) => 
                   <li key={book.id}>                  
                   <Book bookDetail={book} changeShelf={this.props.onUpdateShelf}/>
                   </li>
