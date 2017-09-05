@@ -10,34 +10,41 @@ class SearchBooks extends React.Component {
     rawBooks: []
   }
 
-  componentDidMount() {
-    BooksAPI.search('Android', 5).then((rawBooks) => {
-      console.log('raw results', rawBooks)
-      /* Need to augment these results so they include a shelf property from users book
-         collection. The shelf property should be "none", if no match is found
-      */
-      const augmentedBooks = rawBooks.map((rawBook) => {
-        const res = this.props.books.find((book) => book.id === rawBook.id)
-        console.log("Interim Result is,", res)
-        if(!!res){
-          return { ...rawBook, shelf: res.shelf }
-        } else {
-          return { ...rawBook, shelf: "none" }
-        }      
-      })   
-      console.log("AugmentedBook Result is,", augmentedBooks)      
-      this.setState({ rawBooks: augmentedBooks })
-    })
+  augmentBooks = (booksToAugment) => {
+    if(!booksToAugment || !booksToAugment.length){
+      return [];
+    }
+
+    /* Need to augment these results so they include a shelf property from users book
+        collection. The shelf property should be "none", if no match is found
+    */
+    const augmentedBooks = booksToAugment.map((rawBook) => {
+      const res = this.props.books.find((book) => book.id === rawBook.id)
+      console.log("Interim Result is,", res)
+      if(!!res){
+        return { ...rawBook, shelf: res.shelf }
+      } else {
+        return { ...rawBook, shelf: "none" }
+      }      
+    })   
+    console.log("AugmentedBook Result is,", augmentedBooks)
+    
+    return augmentedBooks
   }
 
   updateQuery = (query) => {
     this.setState({query: query.trim() })
     console.log(query)
+    BooksAPI.search(query, 5).then((rawBooks) => {
+      console.log('raw results', rawBooks)
+      this.setState({ rawBooks })
+    })    
   }
   
   render() {
     const { query, rawBooks } = this.state
-    
+    const enhancedBooks = this.augmentBooks(rawBooks)
+    console.log("Book Status Change on /search")
     return (
       <div className="search-books">
         <div className="search-books-bar">
@@ -61,7 +68,7 @@ class SearchBooks extends React.Component {
         </div>
         <div className="search-books-results">
           <ol className="books-grid">
-              {rawBooks.map((book) => 
+              {enhancedBooks.map((book) => 
                   <li key={book.id}>                  
                   <Book bookDetail={book} changeShelf={this.props.onUpdateShelf}/>
                   </li>

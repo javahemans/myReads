@@ -14,6 +14,10 @@ class BooksApp extends React.Component {
   }
 
   componentDidMount() {
+    this.getBooks()
+  }
+
+  getBooks() {
     BooksAPI.getAll().then((books) => {
       this.setState({ books }) // ES6: Equivalent to { contacts: contacts }
     })
@@ -55,7 +59,7 @@ class BooksApp extends React.Component {
       // Update API with Shelf Choice
       BooksAPI.update(bookToUpdate, bookShelfTarget).then(res => {
         console.log("Added shelf meta data to book, ", res, bookToUpdate)
-        return res
+        // return res
       })
       // Update newBooks array with new book and shelf choice
       const bookToUpdateWithShelf = {...bookToUpdate, shelf: bookShelfTarget}      
@@ -67,7 +71,6 @@ class BooksApp extends React.Component {
       })
 
     }
-
   }
 
   render() {
